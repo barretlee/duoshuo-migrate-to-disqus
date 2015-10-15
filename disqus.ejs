@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dsq="http://www.disqus.com/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:wp="http://wordpress.org/export/1.0/"
+>
+  <channel>
+  <% for(var i = 0; i < threads.length; i++) {
+    var item = threads[i];
+    %>
+    <item>
+      <!-- title of article -->
+      <title><%= item.title %></title>
+      <!-- absolute URI to article -->
+      <link><%= item.url %></link>
+      <!-- body of the page or post; use cdata; html allowed (though will be formatted to DISQUS specs) -->
+      <content:encoded><![CDATA[<%= item.content %>]]></content:encoded>
+      <!-- value used within disqus_identifier; usually internal identifier of article -->
+      <dsq:thread_identifier><%= item.thread_id %></dsq:thread_identifier>
+      <!-- creation date of thread (article), in GMT. Must be YYYY-MM-DD HH:MM:SS 24-hour format. -->
+      <wp:post_date_gmt><%= item.created_at %></wp:post_date_gmt>
+      <!-- open/closed values are acceptable -->
+      <wp:comment_status>open</wp:comment_status>
+    </item>
+  <% } %>
+  <% for(var i = 0; i < posts.length; i++) {
+    var item = posts[i];
+    if(!item.message || item.message.length < 3) {
+      item.message = item.message ? item.message + "..." : "nice!"
+    }
+    %>
+    <item>
+      <!-- title of article -->
+      <title><%= item.title %></title>
+      <!-- absolute URI to article -->
+      <link><%= item.url %></link>
+      <!-- body of the page or post; use cdata; html allowed (though will be formatted to DISQUS specs) -->
+      <content:encoded><![CDATA[<%= item.content %>]]></content:encoded>
+      <!-- value used within disqus_identifier; usually internal identifier of article -->
+      <dsq:thread_identifier><%= item.thread_id %></dsq:thread_identifier>
+      <!-- creation date of thread (article), in GMT. Must be YYYY-MM-DD HH:MM:SS 24-hour format. -->
+      <wp:post_date_gmt><%= item.created_at %></wp:post_date_gmt>
+      <!-- open/closed values are acceptable -->
+      <wp:comment_status>open</wp:comment_status>
+      <wp:comment>
+        <!-- internal id of comment -->
+        <wp:comment_id><%= item.post_id %></wp:comment_id>
+        <!-- author display name -->
+        <wp:comment_author><%= item.author_name %></wp:comment_author>
+        <!-- author email address -->
+        <wp:comment_author_email><%= item.author_email || "null@null.com" %></wp:comment_author_email>
+        <!-- author url, optional -->
+        <wp:comment_author_url><%= item.author_url %></wp:comment_author_url>
+        <!-- author ip address -->
+        <wp:comment_author_IP><%= item.ip %></wp:comment_author_IP>
+        <!-- comment datetime, in GMT. Must be YYYY-MM-DD HH:MM:SS 24-hour format. -->
+        <wp:comment_date_gmt><%= item.created_at %></wp:comment_date_gmt>
+        <!-- comment body; use cdata; html allowed (though will be formatted to DISQUS specs) -->
+        <wp:comment_content><![CDATA[<%= item.message %>]]></wp:comment_content>
+        <!-- is this comment approved? 0/1 -->
+        <wp:comment_approved><%= item.liked || 0 %></wp:comment_approved>
+        <!-- parent id (match up with wp:comment_id) -->
+        <wp:comment_parent><%= item.parents || 0 %></wp:comment_parent>
+      </wp:comment>
+    </item>
+  <% } %>
+  </channel>
+</rss>

@@ -1,0 +1,7 @@
+{
+  "name": "duoshuo-migrate-to-disqus",
+  "author": "Barret Lee<barret.china@gmail.com>",
+  "dependencies": {
+    "ejs": "~2.3.4"
+  }
+}
