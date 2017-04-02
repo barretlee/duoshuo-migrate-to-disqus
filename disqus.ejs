@@ -7,62 +7,50 @@
 >
   <channel>
   <% for(var i = 0; i < threads.length; i++) {
-    var item = threads[i];
+    var thread = threads[i];
+    if (!thread.thread_key) continue;
     %>
     <item>
       <!-- title of article -->
-      <title><%= item.title %></title>
+      <title><%= thread.title %></title>
       <!-- absolute URI to article -->
-      <link><%= item.url %></link>
+      <link><%= thread.url %></link>
       <!-- body of the page or post; use cdata; html allowed (though will be formatted to DISQUS specs) -->
-      <content:encoded><![CDATA[<%= item.content %>]]></content:encoded>
+      <content:encoded><![CDATA[<%= thread.content %>]]></content:encoded>
       <!-- value used within disqus_identifier; usually internal identifier of article -->
-      <dsq:thread_identifier><%= item.thread_id %></dsq:thread_identifier>
+      <dsq:thread_identifier><%= thread.thread_key %></dsq:thread_identifier>
       <!-- creation date of thread (article), in GMT. Must be YYYY-MM-DD HH:MM:SS 24-hour format. -->
-      <wp:post_date_gmt><%= item.created_at %></wp:post_date_gmt>
+      <wp:post_date_gmt><%= thread.created_at %></wp:post_date_gmt>
       <!-- open/closed values are acceptable -->
       <wp:comment_status>open</wp:comment_status>
-    </item>
-  <% } %>
-  <% for(var i = 0; i < posts.length; i++) {
-    var item = posts[i];
-    if(!item.message || item.message.length < 3) {
-      item.message = item.message ? item.message + "..." : "nice!"
-    }
-    %>
-    <item>
-      <!-- title of article -->
-      <title><%= item.title %></title>
-      <!-- absolute URI to article -->
-      <link><%= item.url %></link>
-      <!-- body of the page or post; use cdata; html allowed (though will be formatted to DISQUS specs) -->
-      <content:encoded><![CDATA[<%= item.content %>]]></content:encoded>
-      <!-- value used within disqus_identifier; usually internal identifier of article -->
-      <dsq:thread_identifier><%= item.thread_id %></dsq:thread_identifier>
-      <!-- creation date of thread (article), in GMT. Must be YYYY-MM-DD HH:MM:SS 24-hour format. -->
-      <wp:post_date_gmt><%= item.created_at %></wp:post_date_gmt>
-      <!-- open/closed values are acceptable -->
-      <wp:comment_status>open</wp:comment_status>
+      <% for(var j = 0; j < posts.length; j++) {
+        var post = posts[j];
+        if (post.thread_key !== thread.thread_key) continue;
+        if(!post.message || post.message.length < 3) {
+          post.message = post.message ? post.message + "..." : "nice!"
+        }
+      %>
       <wp:comment>
         <!-- internal id of comment -->
-        <wp:comment_id><%= item.post_id %></wp:comment_id>
+        <wp:comment_id><%= post.post_key %></wp:comment_id>
         <!-- author display name -->
-        <wp:comment_author><%= item.author_name %></wp:comment_author>
+        <wp:comment_author><%= post.author_name %></wp:comment_author>
         <!-- author email address -->
-        <wp:comment_author_email><%= item.author_email || "null@null.com" %></wp:comment_author_email>
+        <wp:comment_author_email><%= post.author_email || "null@null.com" %></wp:comment_author_email>
         <!-- author url, optional -->
-        <wp:comment_author_url><%= item.author_url %></wp:comment_author_url>
+        <wp:comment_author_url><%= post.author_url %></wp:comment_author_url>
         <!-- author ip address -->
-        <wp:comment_author_IP><%= item.ip %></wp:comment_author_IP>
+        <wp:comment_author_IP><%= post.ip %></wp:comment_author_IP>
         <!-- comment datetime, in GMT. Must be YYYY-MM-DD HH:MM:SS 24-hour format. -->
-        <wp:comment_date_gmt><%= item.created_at %></wp:comment_date_gmt>
+        <wp:comment_date_gmt><%= post.created_at %></wp:comment_date_gmt>
         <!-- comment body; use cdata; html allowed (though will be formatted to DISQUS specs) -->
-        <wp:comment_content><![CDATA[<%= item.message %>]]></wp:comment_content>
+        <wp:comment_content><![CDATA[<%= post.message %>]]></wp:comment_content>
         <!-- is this comment approved? 0/1 -->
-        <wp:comment_approved><%= item.liked || 0 %></wp:comment_approved>
+        <wp:comment_approved>1</wp:comment_approved>
         <!-- parent id (match up with wp:comment_id) -->
-        <wp:comment_parent><%= item.parents || 0 %></wp:comment_parent>
+        <wp:comment_parent>0</wp:comment_parent>
       </wp:comment>
+      <% } %>
     </item>
   <% } %>
   </channel>
