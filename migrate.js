@@ -71,7 +71,9 @@ threads:
   author_id: 0
 posts
   post_id: 1221878475854446600,
-  thread_id: 1221878475854446600,
+  post_key: "xxxxxxxxxxxxxxxxxxx",        // 在旧版本数据中更重要，在新版本数据中与 post_id 保持一致
+  thread_id: 1221878475854446600,         
+  thread_key: "xxxxx",
   message: "对浏览器兼容问题的解决么",
   site_id: 1111292,
   created_at: "2013-10-31T18:08:22+08:00",
@@ -83,8 +85,38 @@ posts
   author_email: "",
   author_name: "DINO",
   author_url: "http://t.qq.com/a904591031",
-  author_key: "0"
+  author_key: "0" | null
  */
+
+// 更新时间格式为 YYYY-MM-DD HH:MM:SS (GMT)
+function formatTime(datetimeString) {
+  var date = new Date(datetimeString);
+  var year = date.getUTCFullYear(),
+    month = date.getUTCMonth() + 1,
+    day = date.getUTCDate(),
+    hours = date.getUTCHours(),
+    minutes = date.getUTCMinutes(),
+    seconds = date.getUTCSeconds();
+  var arr = [month, day, hours, minutes, seconds].map(function(val) {
+    var str = val.toString();
+    while (str.length < 2) str = '0' + str;
+    return str;
+  });
+  return year + '-' + arr[0] + '-' + arr[1] + ' ' + arr.slice(2).join(':');
+}
+
+function updateData(dataList) {
+  return dataList.map(function(obj) {
+    var newObj = JSON.parse(JSON.stringify(obj));
+    newObj.created_at = formatTime(obj.created_at);
+    newObj.updated_at = formatTime(obj.updated_at);
+    return newObj;
+  });
+}
+
+duoshuoJSON.posts = updateData(duoshuoJSON.posts);
+duoshuoJSON.threads = updateData(duoshuoJSON.threads);
+
 var disqusXML = fs.readFileSync("./disqus.ejs").toString();
 var disqusCtt = ejs.render(disqusXML, duoshuoJSON);
 
